@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
-const PropertyView = (props) => {
+const PropertyView = () => {
+
+    useEffect(() => {
+
+    }, []);
+
+    const fetchPropertyDetails = () => {
+        
+    }
 
     return (
-        <div>PropertyView` : 'No property ID provided'</div>
+        <div></div>
     ); 
 }
 

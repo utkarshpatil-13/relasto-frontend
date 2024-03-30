@@ -16,7 +16,9 @@ const BuyerRegister = () => {
     isRegistering(true);
 
     try{
-      const response = await fetch("http://localhost:4000/api/buyer", {
+      data.phone = data.phone.toString();
+      console.log(JSON.stringify(data));
+      const response = await fetch("http://localhost:4000/api/buyer/register", {
         method: "POST",
         headers: {
           'Content-Type' : 'application/json',

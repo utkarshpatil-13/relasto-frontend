@@ -19,8 +19,10 @@ const BuyerLogin = () => {
       });
       const data = await res.json();
 
+      console.log(data);
+
       if(res.ok){
-        return data.preferences === null || data.preferences === undefined;
+        return data.preferences.propertyType === null || data.preferences.propertyType === undefined;
       }
 
     } catch (error) {
@@ -35,7 +37,7 @@ const BuyerLogin = () => {
     islogging(true);
 
     try {
-      const response = await fetch("http://localhost:4000/api/buyer/auth", {
+      const response = await fetch("http://localhost:4000/api/buyer/login", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json',
@@ -45,25 +47,32 @@ const BuyerLogin = () => {
 
       const buyerdata = await response.json();
 
+      localStorage.setItem('accessToken', buyerdata.data.accessToken);
+      localStorage.setItem('refreshToken', buyerdata.data.refreshToken);
 
       if (response.ok) {
         console.log(buyerdata);
         console.log("Login Successfully");
         // settings contexts
         setBuyerLoggedIn(true);
-        setBuyerId(buyerdata);
+        setBuyerId(buyerdata.data.buyer._id);
+        localStorage.setItem('buyerLoggedIn', true);
+        localStorage.setItem('buyerId', buyerdata.data.buyer._id);
+
+
+        const checkingPreferences = await checkForPreferences(buyerdata.data.buyer._id);
+
+        if(checkingPreferences){
+          navigate('/preferences');
+        }
+        else{
+          navigate('/listings');
+        }
+
       }
       else {
+        alert("Login Failed!");
         console.log("Failed to login!", response.statusText);
-      }
-
-      const checkingPreferences = await checkForPreferences(buyerdata);
-
-      if(checkingPreferences){
-        navigate('/preferences');
-      }
-      else{
-        navigate('/listings');
       }
 
       islogging(false);

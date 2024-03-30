@@ -128,10 +128,13 @@ const Listings = () => {
     
 
 
-    const { buyerId, buyerLoggedIn } = useContext(BuyerContext);
+    // const { buyerId, buyerLoggedIn } = useContext(BuyerContext);
 
+    const buyerLoggedIn = localStorage.getItem('buyerLoggedIn') === 'true';
+    const buyerId = localStorage.getItem('buyerId');
+    
     const [pageNo, setPageNo] = useState(1);
-
+    
     const [response, setResponse] = useState([]);
 
 
@@ -141,38 +144,48 @@ const Listings = () => {
     const [selectedCity, setSelectedCity] = useState([]);
 
     // Area
-    const [minArea, setMinArea] = useState(500);
-    const [maxArea, setMaxArea] = useState(1000);
-
+    const [minArea, setMinArea] = useState(1);
+    const [maxArea, setMaxArea] = useState(1);
+    
     // Price
-    const [minPrice, setMinPrice] = useState(100000);
-    const [maxPrice, setMaxPrice] = useState(10000000);
-
-
+    const [minPrice, setMinPrice] = useState(1);
+    const [maxPrice, setMaxPrice] = useState(1);
+    
+    
     useEffect(() => {
-        getBuyerData(buyerId);
-    }, [buyerId]);
+        getInitialPropertyData();
+    }, [pageNo]);
     
     useEffect(() => {
         loadListings();
-    }, [pageNo, selectedCity, selectedPropertyType, selectedState, minArea, maxArea, minPrice, maxPrice]);
+    }, [pageNo, selectedCity, selectedPropertyType, selectedState, minArea, maxArea]);
     
-    const getBuyerData = async (id) => {
+    const accessToken = localStorage.getItem('accessToken');
+    const getInitialPropertyData = async () => {
         try {
-            const res = await fetch(`http://localhost:4000/api/buyer/${id}`, {
+            const response = await fetch(`http://localhost:4000/api/property/initial-req/?page=${pageNo}&limit=9`, {
                 method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
             });
-            const data = await res.json();
+
+            const res = await response.json();
+            const properties = res.data.properties;
+            const preferences = res.data.preferences;
     
-            if (res.ok) {
-                console.log(data.preferences);
-                setSelectedPropertyType(data.preferences.propertyType);
-                setSelectedState(data.preferences.state);
-                setSelectedCity(data.preferences.city);
-                setMinArea(data.preferences.area.min);
-                setMaxArea(data.preferences.area.max);
-                setMinPrice(data.preferences.price.min);
-                setMaxPrice(data.preferences.price.max);
+            if (response.ok) {
+                console.log(preferences);
+                setSelectedPropertyType(preferences.propertyType);
+                setSelectedState(preferences.state);
+                setSelectedCity(preferences.city);
+                setMinArea(preferences.area.min);
+                setMaxArea(preferences.area.max);
+                setMinPrice(preferences.price.min);
+                setMaxPrice(preferences.price.max);
+
+                console.log(properties);
+                setResponse(properties);
             }
         } catch (error) {
             console.log("Error in fetching the data ", error);
@@ -190,7 +203,7 @@ const Listings = () => {
         headers.append('selected-property-type', selectedPropertyTypeString);
     
         try {
-            const res = await fetch(`http://localhost:4000/api/property/filters/?state=${selectedState}&minArea=${minArea}&maxArea=${maxArea}&minPrice=${minPrice}&maxPrice=${maxPrice}&page=${pageNo}&limit=9`, {
+            const res = await fetch(`http://localhost:4000/api/property/filters/?state=${selectedState}&minArea=${minArea}&maxArea=${maxArea}&page=${pageNo}&limit=9`, {
                 method: 'GET',
                 headers: headers
             });

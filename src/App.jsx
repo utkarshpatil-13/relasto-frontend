@@ -6,7 +6,6 @@ import { BuyerContextProvider } from './contexts/BuyerContext'
 import { SellerContextProvider } from './contexts/SellerContext'
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <BuyerContextProvider>
