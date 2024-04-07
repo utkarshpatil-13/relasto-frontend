@@ -28,16 +28,19 @@ const BuyerRegister = () => {
 
       if(response.ok){  
         console.log("Form Submitted Successfully");
-        setSuccess(true);
+        // setSuccess(true);
+        alert("Registration Successfull!");
         navigate('/buyerlogin');
       }
       else{
+        alert("Failed to submit the form!");
         console.log("Failed to submit the form", response.statusText);
       }
 
       isRegistering(false);
     }
     catch(error){
+      alert("Failed to submit the form!");
       console.log("An error occured while submitting the data ", error);
     }
   }
@@ -104,7 +107,7 @@ const BuyerRegister = () => {
                     message: "Password is required!"
                   },
                   pattern: {
-                    value: /^.{8}$/,
+                    value: /^.{8,}$/,
                     message: "Password should be atleast 8 characters!"
                   }
                 })} />
@@ -114,7 +117,7 @@ const BuyerRegister = () => {
           <div className='mx-2 mt-14'>
             <button type='submit' className='text-xl w-full rounded-lg bg-black text-white p-3 px-8 focus:bg-gray-700 focus:duration-200 focus:transition-all' disabled={registering}>{registering ? 'Registering...' : 'Register'}</button>
           </div>
-          {success && setInterval(<p className='text-green text-2xl'>Registration Successful!</p>, 4000)}
+          {/* {success && setTimeout(<p className='text-green text-2xl'>Registration Successful!</p>, 4000)} */}
           <div className='flex text-2xl justify-center mt-3'>
             <p>Already have an account</p>
             <Link to='/buyerlogin' className='no-underline'>

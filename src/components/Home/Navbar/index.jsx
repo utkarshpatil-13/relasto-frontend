@@ -18,7 +18,10 @@ const Navbar = () => {
     const { sellerId, sellerLoggedIn, setSellerLoggedIn, setSellerId } = useContext(SellerContext);
 
     const buyerLoggedIn2 = localStorage.getItem('buyerLoggedIn') === 'true';
-    const accessToken = localStorage.getItem('accessToken');
+    const buyerAccessToken = localStorage.getItem('accessToken');
+
+    const sellerLoggedIn2 = localStorage.getItem('sellerLoggedIn') === 'true';
+    const SellerAccessToken = localStorage.getItem('accessToken');
 
     const toggleHomeDropdown = () => {
         setIsHomeOpen(!isHomeOpen);
@@ -50,75 +53,34 @@ const Navbar = () => {
                 <img src={RelastoLogo} className='w-[170px]' alt="" />
             </div>
             <div className='text-2xl'>
-                <ul className='mx-2 flex h-12 p-2 cursor-pointer'>
+                <ul id="sidemenu" className="flex">
+                    <Link to='/'>
 
-                    {/* Home */}
-                    <li onClick={toggleHomeDropdown} className='mx-3'>
-                        <div className='flex'>
-                            <p>
-                                Home
+                        <li className="inline-block list-none mx-5  cursor-pointer select-none">
+                            <p className="text-gray-800 text-2xl font-medium relative group">Home
+                                <span className="absolute bottom-[-4px] left-0 w-0 h-0 bg-slate-600 duration-300 transition-all group-hover:w-full group-hover:h-1"></span>
                             </p>
-                            <div className='px-1 relative top-1'>
-                                <DropDownIcon className='' isOpen={isHomeOpen} />
-                            </div>
-                        </div>
-                        <div>
-                            {isHomeOpen && (
-                                <ul className=' p-2'>
-                                    <li key="homev1" className='' >Home v1</li>
-                                    <li key="homev2" >Home v2</li>
-                                    <li key="about">About</li>
-                                    <li key="contact" >Contact</li>
-                                </ul>
-                            )}
-                        </div>
-                    </li>
-
-                    {/* Listing */}
-
-                    <li onClick={toggleListingDropdown} className='mx-3'>
-                        <div className='flex'>
-                            <p>
-                                Listing
+                        </li>
+                    </Link>
+                    <Link to='/listings'>
+                        <li className="inline-block list-none mx-5  cursor-pointer">
+                            <p className="text-gray-800 text-2xl font-medium relative group">Listings
+                                <span className="absolute bottom-[-4px] left-0 w-0 h-0 bg-slate-600 duration-300 transition-all group-hover:w-full group-hover:h-1"></span>
                             </p>
-                            <div className='px-1 relative top-1'>
-                                <DropDownIcon className='' isOpen={isListingOpen} />
-                            </div>
-                        </div>
-                        <div>
-                            {isListingOpen && (
-                                <ul>
-                                    <li key="listv1">Listing v1</li>
-                                    <li key="listv2">Listing v2</li>
-                                </ul>
-                            )}
-                        </div>
+                        </li>
+                    </Link>
+                    <li className="inline-block list-none mx-5  cursor-pointer">
+                        <p className="text-gray-800 text-2xl font-medium relative group">Agents
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-0 bg-slate-600 duration-300 transition-all group-hover:w-full group-hover:h-1"></span>
+                        </p>
                     </li>
-
-                    {/* Agents */}
-
-                    <li onClick={toggleAgentsDropdown} className='mx-3'>
-                        <div className='flex'>
-                            <p>
-                                Agents
-                            </p>
-                            <div className='px-1 relative top-1'>
-                                <DropDownIcon className='' isOpen={isAgentsOpen} />
-                            </div>
-                        </div>
-                        <div>
-                            {isAgentsOpen && (
-                                <ul>
-                                    <li key="agentlist">Agent List</li>
-                                    <li key="agentprofile">Agent Profile</li>
-                                </ul>
-                            )}
-                        </div>
-
+                    <li className="inline-block list-none mx-5  cursor-pointer">
+                        <p className="text-gray-800 text-2xl font-medium relative group">Blog
+                            <span className="absolute bottom-[-4px] left-0 w-0 h-0 bg-slate-600 duration-300 transition-all group-hover:w-full group-hover:h-1"></span>
+                        </p>
                     </li>
-                    <li className='mx-4'>Property</li>
-                    <li className='mx-4'>Blog</li>
                 </ul>
+
             </div>
             <div className='flex'>
                 <div className='flex h-12 p-2 px-3 border-2 border-slate-400 rounded-xl cursor-pointer'>
@@ -131,7 +93,7 @@ const Navbar = () => {
                 </div>
 
                 {
-                    buyerLoggedIn2 ? (
+                    buyerLoggedIn2 || sellerLoggedIn2 ? (
                         <Link to='/'>
                             <div className='mx-2 bg-black text-white h-12 p-2 px-4 rounded-xl cursor-pointer active:bg-gray-700' onClick={async () => {
                                 if (buyerLoggedIn2) {
@@ -142,8 +104,8 @@ const Navbar = () => {
 
                                     console.log(accessToken);
                                     try {
-                                        const response = await fetch(`http://localhost/api/buyer/logout`, {
-                                            method: "GET",
+                                        const response = await fetch(`http://localhost:4000/api/buyer/logout`, {
+                                            method: "POST",
                                             headers: {
                                                 'Content-Type': 'application/json', // Specify the content type
                                                 'Authorization': `Bearer ${accessToken}`
@@ -165,6 +127,30 @@ const Navbar = () => {
                                 else {
                                     setSellerLoggedIn(false);
                                     setSellerId('');
+
+                                    localStorage.setItem('sellerLoggedIn', false);
+                                    localStorage.setItem('sellerId', undefined);
+
+                                    console.log(accessToken);
+                                    try {
+                                        const response = await fetch(`http://localhost:4000/api/seller/logout`, {
+                                            method: "GET",
+                                            headers: {
+                                                'Content-Type': 'application/json', // Specify the content type
+                                                'Authorization': `Bearer ${accessToken}`
+                                            },
+                                        });
+
+                                        if (response.ok) {
+                                            console.log("seller logged out successfully");
+                                            localStorage.removeItem('accessToken');
+                                            localStorage.removeItem('refreshToken');
+                                        } else {
+                                            console.log(response.statusText);
+                                        }
+                                    } catch (error) {
+                                        console.log(error.message);
+                                    }
                                 }
                             }}>Logout</div>
                         </Link>
@@ -184,3 +170,6 @@ const Navbar = () => {
 }
 
 export default Navbar
+
+
+

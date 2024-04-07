@@ -58,7 +58,7 @@ const BuyerLogin = () => {
         setBuyerId(buyerdata.data.buyer._id);
         localStorage.setItem('buyerLoggedIn', true);
         localStorage.setItem('buyerId', buyerdata.data.buyer._id);
-
+        islogging(false);
 
         const checkingPreferences = await checkForPreferences(buyerdata.data.buyer._id);
 
@@ -78,6 +78,8 @@ const BuyerLogin = () => {
       islogging(false);
     }
     catch (error) {
+      alert("User does not exist!");
+      islogging(false);
       console.log("An error occured while submitting the data ", error);
     }
   }
@@ -111,7 +113,7 @@ const BuyerLogin = () => {
                   message: "Password is required!"
                 },
                 pattern: {
-                  value: /^.{8}$/,
+                  value: /^.{8,}$/,
                   message: "Password should be atleast 8 characters!"
                 }
               })} />

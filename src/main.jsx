@@ -16,6 +16,10 @@ import Preferences2 from './components/Home/Preferences/preference2.jsx'
 
 import { Provider } from 'react-redux';
 import store from './store/store.js'
+import Dashboard from './components/Seller/Dashboard.jsx'
+import AddProperty from './components/Seller/AddProperty.jsx'
+import SellerProfile from './components/Seller/SellerProfile.jsx'
+import BuyerProfile from './components/Buyer/BuyerProfile.jsx'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -30,6 +34,10 @@ const router = createBrowserRouter(
       <Route path='/propertyView' element={<PropertyView/>}/>
       <Route path='/preferences' element={<Preferences/>}/>
       <Route path='/preferences2' element={<Preferences2/>}/>
+      <Route path='/sellerdashboard' element={<Dashboard/>}/>
+      <Route path='/addproperty' element={<AddProperty/>}/>
+      <Route path='/sellerprofile' element={<SellerProfile/>}/>
+      <Route path='/buyerprofile' element={<BuyerProfile/>}/>
     </Route>
   )
 );

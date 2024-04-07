@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import SellerContext from '../../../contexts/SellerContext.jsx';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SellerLogin = () => {
     const [logging, islogging] = useState(false);
@@ -11,11 +11,13 @@ const SellerLogin = () => {
   
     const {setSellerLoggedIn, setSellerId} = useContext(SellerContext);
 
+    const navigate = useNavigate();
+
     const onSubmit = async (data) => {
       islogging(true);
   
       try{
-        const response = await fetch("http://localhost:4000/api/seller/auth", {
+        const response = await fetch(`http://localhost:4000/api/seller/login`, {
           method: "POST",
           headers: {
             'Content-Type' : 'application/json',
@@ -25,14 +27,21 @@ const SellerLogin = () => {
   
         const sellerdata = await response.json();
 
+        localStorage.setItem('accessToken', sellerdata.data.accessToken);
+        localStorage.setItem('refreshToken', sellerdata.data.refreshToken);
         
         if(response.ok){  
-            console.log(data.email);
+            console.log(sellerdata);
             console.log("Login Successfully");
             
             // settings contexts
             setSellerLoggedIn(true);
-            setSellerId(sellerdata);
+            setSellerId(sellerdata.data.seller._id);
+            localStorage.setItem('sellerLoggedIn', true);
+            localStorage.setItem('sellerId', sellerdata.data.seller._id);
+            islogging(false);
+
+            navigate('/sellerdashboard');
         }
         else{
           console.log("Failed to login!", response.statusText);
@@ -44,6 +53,8 @@ const SellerLogin = () => {
         // const {setSellerLoggedIn, setSellerId} = useContext(SellerContext);
       }
       catch(error){
+        alert("Seller does not exist");
+        islogging(false);
         console.log("An error occured while submitting the data ", error);
       }
     }
@@ -77,7 +88,7 @@ const SellerLogin = () => {
                       message: "Password is required!"
                     },
                     pattern: {
-                      value: /^.{8}$/,
+                      value: /^.{8,}$/,
                       message: "Password should be atleast 8 characters!"
                     }
                   })} />
